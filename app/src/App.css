@@ -1,117 +1,88 @@
-/* App.css */
-
-/* General Styles */
+/* General body styling */
 body {
+  background-color: #1a202c;
+  color: #f7fafc;
   font-family: 'Arial', sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 0;
 }
 
-/* Container */
+/* Container for centered form */
 .container {
-  max-width: 1200px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 2rem;
 }
 
-/* Header Styles */
-h2 {
-  color: #333;
-}
-
-h3 {
-  color: #555;
-}
-
-/* Card Styles */
-.grid {
-  display: grid;
-  gap: 20px;
-}
-
-.bg-white {
-  background-color: #ffffff;
-}
-
-.shadow-lg {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.rounded-lg {
+/* Gradient background for the form container */
+.bg-gradient {
+  background: linear-gradient(to right, #1a202c, #2d3748);
   border-radius: 8px;
+  padding: 2rem;
 }
 
-.p-4 {
-  padding: 16px;
+/* Form Title */
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
-.mb-6 {
-  margin-bottom: 24px;
-}
-
-/* Form Styles */
-input[type="number"] {
+/* Form Fields */
+input[type="text"], input[type="number"], textarea, input[type="file"] {
   width: 100%;
-  padding: 8px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 5px;
+  border: 1px solid #4a5568;
+  background-color: #2d3748;
+  color: #f7fafc;
 }
 
-/* Button Styles */
+/* Button styling */
 button {
-  background-color: #007bff;
+  background-color: #4c51bf;
   color: white;
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border-radius: 5px;
   border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
   cursor: pointer;
 }
 
+button:disabled {
+  background-color: #718096;
+}
+
 button:hover {
-  background-color: #0056b3;
+  background-color: #434190;
 }
 
-/* Donation Button Specific */
-button.bg-blue-500 {
-  background-color: #007bff;
+/* Form label */
+label {
+  color: #e2e8f0;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
-button.bg-blue-500:hover {
-  background-color: #0056b3;
+/* Toast styling */
+.Toastify__toast-container {
+  font-family: 'Arial', sans-serif;
+  padding: 0.5rem;
 }
 
-/* Text Centering */
-.text-center {
-  text-align: center;
+.Toastify__toast {
+  background-color: #2b6cb0;
+  color: white;
 }
 
-.text-2xl {
-  font-size: 1.5rem;
+.Toastify__toast--error {
+  background-color: #e53e3e;
 }
 
-.text-xl {
-  font-size: 1.25rem;
-}
-
-.font-bold {
-  font-weight: bold;
-}
-
-.mt-2 {
-  margin-top: 8px;
-}
-
-/* Responsive Grid */
-@media (min-width: 768px) {
-  .md\\:grid-cols-2 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\\:grid-cols-3 {
-    grid-template-columns: repeat(3, 1fr);
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
   }
 }

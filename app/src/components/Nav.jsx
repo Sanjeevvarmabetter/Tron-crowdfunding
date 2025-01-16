@@ -11,7 +11,7 @@ function Nav({ account, checkTronLink, loading }) {
           <nav className="flex justify-between text-white w-screen px-24">
             <div className="px-5 xl:px-12 py-6 flex w-full items-center">
               <Link className="text-3xl font-bold font-heading no-underline text-white" to="/">
-                Ignitus Networks
+                Ignitus Networks 
               </Link>
 
               <ul className="hidden md:flex px-4 mx-auto font-semibold font-heading space-x-12">

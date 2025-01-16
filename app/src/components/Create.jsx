@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Button, Form, Row } from 'react-bootstrap';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import "../App.css";
 
 const Create = ({ contractAddress, contractABI }) => {
   const [processing, setProcessing] = useState(false);
@@ -97,56 +98,62 @@ const Create = ({ contractAddress, contractABI }) => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
-      <main className="container mx-auto px-4">
-        <div className="content text-white shadow-lg rounded-lg border-2 p-4 px-5 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600" style={{ marginTop: "120px" }}>
-          <div className="space-y-8">
-            <Row className="g-4">
-              <Form.Group>
-                <Form.Label className="text-lg">Upload Image</Form.Label>
-                <Form.Control
-                  type="file"
-                  required
-                  name="image"
-                  accept="image/*"
-                  onChange={changeHandler}
-                />
-              </Form.Group>
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-r from-gray-800 to-gray-900">
+      <main className="container mx-auto px-6 py-8">
+        <div className="bg-gray-800 shadow-lg rounded-lg p-6 max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-white mb-6 text-center">Create Campaign</h2>
+          <Row className="g-4">
+            <Form.Group className="w-full">
+              <Form.Label className="text-lg text-white">Upload Image</Form.Label>
               <Form.Control
-                onChange={handleChange}
-                name="title"
+                type="file"
                 required
-                type="text"
-                placeholder="Title"
+                name="image"
+                accept="image/*"
+                onChange={changeHandler}
+                className="bg-gray-700 text-white"
               />
-              <Form.Control
-                onChange={handleChange}
-                name="description"
-                required
-                as="textarea"
-                placeholder="Description"
-              />
-              <Form.Control
-                onChange={handleChange}
-                name="target"
-                required
-                type="number"
-                placeholder="Target Amount"
-              />
-              <Form.Control
-                onChange={handleChange}
-                name="deadline"
-                required
-                type="number"
-                placeholder="Deadline (Unix Timestamp)"
-              />
-              <div className="flex justify-center">
-                <Button onClick={handleEvent} variant="primary" size="lg" disabled={processing}>
-                  Create Campaign
-                </Button>
-              </div>
-            </Row>
-          </div>
+            </Form.Group>
+
+            <Form.Control
+              onChange={handleChange}
+              name="title"
+              required
+              type="text"
+              placeholder="Title"
+              className="w-full p-3 my-2 bg-gray-700 text-white rounded-lg"
+            />
+            <Form.Control
+              onChange={handleChange}
+              name="description"
+              required
+              as="textarea"
+              placeholder="Description"
+              className="w-full p-3 my-2 bg-gray-700 text-white rounded-lg"
+            />
+            <Form.Control
+              onChange={handleChange}
+              name="target"
+              required
+              type="number"
+              placeholder="Target Amount"
+              className="w-full p-3 my-2 bg-gray-700 text-white rounded-lg"
+            />
+            <Form.Control
+              onChange={handleChange}
+              name="deadline"
+              required
+              type="number"
+              placeholder="Deadline (Unix Timestamp)"
+              className="w-full p-3 my-2 bg-gray-700 text-white rounded-lg"
+            />
+
+            <div className="flex justify-center mt-6">
+              <Button onClick={handleEvent} variant="primary" size="lg" disabled={processing} className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500">
+                {processing ? 'Creating...' : 'Create Campaign'}
+              </Button>
+            </div>
+          </Row>
         </div>
       </main>
     </div>
