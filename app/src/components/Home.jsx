@@ -79,7 +79,7 @@ function Home({ contractAddress, contractABI }) {
         ...prev,
         [campaignId]: ''
       }));
-      
+        
       // Refresh campaigns to update amounts
       await getCampaigns();
 
