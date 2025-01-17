@@ -18,52 +18,47 @@ function App() {
   // Function to check if TronLink is available and to request accounts
   const checkTronLink = async () => {
     try {
-      if (window.tronLink && window.tronLink.tronWeb) {
-        // Requesting the account from TronLink
-        const acc = await window.tronLink.request({ method: 'tron_requestAccounts' });
-        
-        if (acc && acc.message) {
-          setAccount(acc.message);
-          setConnected(true);
-          setFirstTime(true);
-          toast.success("Connected to TronLink successfully.", { position: "top-center" });
-        } else {
-          toast.error("Unable to retrieve account from TronLink. Please try again.", { position: "top-center" });
-        }
-      } else {
-        toast.error("TronLink not found. Please install TronLink extension.", { position: "top-center" });
-      }
+      const tron = window.tronLink;
+      const tronWeb = tron.tronWeb;
+      setConnected(true); // Changed connecteds to connected
+      console.log("Inside checkTronLink");
+
+      const acc = await window.tronLink.request({ method: 'tron_requestAccounts' });
+      console.log("acc msg: ", acc.message);
+
+      setAccount(acc);
+      setFirstTime(true); // Ensure you're setting the firstTime state correctly
+      console.log("This is ACC", acc);
     } catch (error) {
       console.error("Error connecting to TronLink:", error);
-      toast.error("Error connecting to TronLink. Please try again.", { position: "top-center" });
     }
   };
 
-  // Function to initialize the contract once the account is connected
-  const initiateContract = async () => {
-    try {
-      if (window.tronLink && window.tronLink.tronWeb) {
-        const tronWeb = window.tronLink.tronWeb;
-        const marketplaceContract = await tronWeb.contract(contractData.abi, contractData.address);
-        setMarketplace(marketplaceContract);
-        setLoading(false); // Set loading to false once the contract is initialized
-        toast.success("Contract initialized successfully.", { position: "top-center" });
-      } else {
-        toast.error("TronLink is not available. Please connect TronLink.", { position: "top-center" });
-      }
-    } catch (error) {
-      console.error("Error initializing contract:", error);
-      toast.error("Error initializing contract. Please try again.", { position: "top-center" });
+  const checkAccount = async () => {
+    if (!account) {
+      console.log("Check running inside checkAccount");
+      await checkTronLink();
     }
   };
 
-  // UseEffect to initiate the contract when account changes (when the user connects TronLink)
   useEffect(() => {
     if (account !== null) {
       initiateContract();
+      console.log("Instead of initContract");
     }
-  }, [account]); // Dependency array to trigger the effect when `account` changes
+  }, [account]);
 
+  const initiateContract = async () => {
+    try {
+      const tron = window.tronLink;
+      const tronWeb = tron.tronWeb;
+      let marketplaceContract = await tronWeb.contract(contractData.abi, contractData.address);
+      setMarketplace(marketplaceContract);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error connecting to TronLink:", error);
+    }
+  };
   return (
     <BrowserRouter>
       <ToastContainer />
