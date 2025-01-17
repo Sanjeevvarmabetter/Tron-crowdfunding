@@ -22,7 +22,6 @@ contract CrowdFunding {
     _target, uint256 _deadline, string memory _image) public returns (uint256) {
         Campaign storage campaign = campaigns[numberOfCampaigns];
 
-        // check if all ok or not!
         require(campaign.deadline < block.timestamp, "The deadline should be a future date.");
 
         campaign.owner = _owner;
@@ -46,7 +45,6 @@ contract CrowdFunding {
         campaign.donators.push(msg.sender);
         campaign.donations.push(amount);
 
-        // check if payment was done or not!
         (bool sent,) = payable(campaign.owner).call{value: amount}("");
 
         if(sent) {
