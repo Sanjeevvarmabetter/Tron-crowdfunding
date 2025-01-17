@@ -111,21 +111,25 @@ function Home({ contractAddress, contractABI }) {
               </div>
             ) : (
               <Row xs={1} md={2} lg={3} className="g-4">
-                {campaigns.map((campaign) => {
-                  const tronWeb = window.tronLink.tronWeb;
-                  const collected = tronWeb.fromSun(campaign.amountCollected);
-                  const target = tronWeb.fromSun(campaign.target);
-                  const progress = calculateProgress(collected, target);
-                  const isClosed = collected >= target;
-
+           {campaigns.map((campaign) => {
+  const tronWeb = window.tronLink.tronWeb;
+  const collected = tronWeb.fromSun(campaign.amountCollected);
+  const target = tronWeb.fromSun(campaign.target);
+  const progress = calculateProgress(collected, target);
+  const isClosed = collected >= target;
                   return (
                     <Col key={campaign.id} className="d-flex align-items-stretch">
-                      <div className="card custom-card">
-                        <img
-                          className="card-img-top"
-                          src={campaign.image || "default_image_url.jpg"}
-                          alt={campaign.title}
-                        />
+                   <div className="card custom-card">
+        <img
+          className="card-img-top"
+          src={campaign.image}
+          alt={campaign.title}
+          style={{
+            height: '200px',  // Set a fixed height
+            objectFit: 'cover', // Maintain aspect ratio
+            width: '100%'
+          }}
+        />
                         <div className="card-body">
                           <h5 className="card-title">{campaign.title}</h5>
                           <p className="card-text">{campaign.description}</p>
