@@ -5,7 +5,7 @@ import './Home.css';
 
 function Home({ contractAddress, contractABI }) {
   const [campaigns, setCampaigns] = useState([]);
-  const [donationAmounts, setDonationAmounts] = useState({});  /
+  const [donationAmounts, setDonationAmounts] = useState({});  // Changed to object to track multiple inputs
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,6 +18,7 @@ function Home({ contractAddress, contractABI }) {
       const contract = await tronWeb.contract(contractABI, contractAddress);
       const allCampaigns = await contract.getCampaigns().call();
       
+      // Add index as id to each campaign
       const campaignsWithIds = allCampaigns.map((campaign, index) => ({
         ...campaign,
         id: index
@@ -61,8 +62,10 @@ function Home({ contractAddress, contractABI }) {
       const tronWeb = tron.tronWeb;
       const contract = await tronWeb.contract(contractABI, contractAddress);
       
+      // Convert donation amount to SUN
       const amountInSun = tronWeb.toSun(parsedAmount);
 
+      // Send transaction
       const tx = await contract.donateToCampaign(campaignId).send({
         callValue: amountInSun,
         shouldPollResponse: true
@@ -71,13 +74,13 @@ function Home({ contractAddress, contractABI }) {
       console.log('Transaction:', tx);
       toast.success('Donation successful!', { position: 'top-center' });
       
-
-+
+      // Clear only the specific campaign's donation amount
       setDonationAmounts(prev => ({
         ...prev,
         [campaignId]: ''
       }));
       
+      // Refresh campaigns to update amounts
       await getCampaigns();
 
     } catch (error) {
