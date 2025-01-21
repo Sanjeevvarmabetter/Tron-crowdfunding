@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Create from './components/Create.jsx';
 import Home from './components/Home.jsx';
+import Closed from './components/Closed.jsx';
 import contractData from './contracts/contractData.json';
 import Nav from './components/Nav.jsx';
 
@@ -76,6 +77,10 @@ function App() {
               <Route
                 path='/'
                 element={<Home contractAddress={contractData.address} contractABI={contractData.abi} />}
+              />
+              <Route
+                path='/closed'
+                element={<Closed contractAddress={contractData.address} contractABI={contractData.abi} />}
               />
             </Routes>
           )}

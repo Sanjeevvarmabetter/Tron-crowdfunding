@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import './Home.css';
 
 function Home({ contractAddress, contractABI }) {
-  const [openCampaigns, setOpenCampaigns] = useState([]);
+  const [closedCampaigns, setClosedCampaigns] = useState([]);
   const [donationAmounts, setDonationAmounts] = useState({}); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,7 +36,7 @@ function Home({ contractAddress, contractABI }) {
         return collected >= target || campaign.deadline <= currentTime;
       });
 
-      setOpenCampaigns(open);
+      setClosedCampaigns(closed);
     } catch (error) {
       console.error("Error loading campaigns:", error);
       setError('Failed to load campaigns. Please try again later.');
@@ -168,17 +168,10 @@ function Home({ contractAddress, contractABI }) {
       <div className="row">
         <main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '1000px' }}>
           <div className="content mx-auto">
-            <h2 className="text-center mb-4">Open Campaigns</h2>
-            {error && <Alert variant="danger">{error}</Alert>}
-            {loading ? (
-              <div className="text-center mt-5">
-                <Spinner animation="border" />
-                <p>Loading campaigns...</p>
-              </div>
-            ) : (
-              renderCampaigns(openCampaigns, false)
-            )}
-    </div>
+          
+            <h2 className="text-center mb-4 mt-5">Closed Campaigns</h2>
+            {renderCampaigns(closedCampaigns, true)}
+          </div>
         </main>
       </div>
     </div>
