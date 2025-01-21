@@ -86,3 +86,11 @@ label {
     padding: 1rem;
   }
 }
+
+.wallet-info {
+  margin-top: 70px;
+  padding: 10px;
+  background-color: #000000; /* Light background for visibility */
+  border-radius: 1px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
