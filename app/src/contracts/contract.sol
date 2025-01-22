@@ -1,192 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Button, Alert, Spinner, Form, ProgressBar } from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import './Home.css';
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.9;
 
-function Home({ contractAddress, contractABI }) {
-  const [openCampaigns, setOpenCampaigns] = useState([]);
-  const [closedCampaigns, setClosedCampaigns] = useState([]);
-  const [donationAmounts, setDonationAmounts] = useState({}); 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const getCampaigns = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const tron = window.tronLink;
-      const tronWeb = tron.tronWeb;
-      const contract = await tronWeb.contract(contractABI, contractAddress);
-      const allCampaigns = await contract.getCampaigns().call();
-      const currentTime = Math.floor(Date.now() / 1000);
-      
-      const campaignsWithIds = allCampaigns.map((campaign, index) => ({
-        ...campaign,
-        id: index
-      }));
-      
-      const open = campaignsWithIds.filter(campaign => {
-        const collected = tronWeb.fromSun(campaign.amountCollected);
-        const target = tronWeb.fromSun(campaign.target);
-        return collected < target && campaign.deadline > currentTime;
-      });
-
-      const closed = campaignsWithIds.filter(campaign => {
-        const collected = tronWeb.fromSun(campaign.amountCollected);
-        const target = tronWeb.fromSun(campaign.target);
-        return collected >= target || campaign.deadline <= currentTime;
-      });
-
-      setOpenCampaigns(open);
-      setClosedCampaigns(closed);
-    } catch (error) {
-      console.error("Error loading campaigns:", error);
-      setError('Failed to load campaigns. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getCampaigns();
-  }, []);
-
-  const handleDonationChange = (campaignId, value) => {
-    setDonationAmounts(prev => ({
-      ...prev,
-      [campaignId]: value
-    }));
-  };
-
-  const donateToCampaign = async (campaignId) => {
-    const donationAmount = donationAmounts[campaignId];
-    const parsedAmount = parseFloat(donationAmount);
-
-    if (!parsedAmount || parsedAmount <= 0 || isNaN(parsedAmount)) {
-      toast.error('Please enter a valid donation amount.', { position: 'top-center' });
-      return;
+contract CrowdFunding {
+    struct Campaign {
+        address owner;
+        string title;
+        string description;
+        uint256 target;
+        uint256 deadline;
+        uint256 amountCollected;
+        string image;
+        address[] donators;
+        uint256[] donations;
     }
 
-    try {
-      const tron = window.tronLink;
-      if (!tron?.tronWeb) {
-        throw new Error('TronLink not found. Please make sure TronLink is installed and connected.');
-      }
+    mapping(uint256 => Campaign) public campaigns;
 
-      const tronWeb = tron.tronWeb;
-      const contract = await tronWeb.contract(contractABI, contractAddress);
-      
-      const amountInSun = tronWeb.toSun(parsedAmount);
+    uint256 public numberOfCampaigns = 0;
 
-      const tx = await contract.donateToCampaign(campaignId).send({
-        callValue: amountInSun,
-        shouldPollResponse: true
-      });
+    function createCampaign(address _owner, string memory _title, string memory _description, uint256
+    _target, uint256 _deadline, string memory _image) public returns (uint256) {
+        Campaign storage campaign = campaigns[numberOfCampaigns];
 
-      console.log('Transaction:', tx);
-      toast.success('Donation successful!', { position: 'top-center' });
+        // check if all ok or not!
+        require(campaign.deadline < block.timestamp, "The deadline should be a future date.");
 
-      // Update campaigns based on new collected amount
-      getCampaigns();
-      setDonationAmounts(prev => ({
-        ...prev,
-        [campaignId]: ''
-      }));
+        campaign.owner = _owner;
+        campaign.title = _title;
+        campaign.description = _description;
+        campaign.target = _target;
+        campaign.deadline = _deadline;
+        campaign.amountCollected = 0;
+        campaign.image = _image;
 
-    } catch (error) {
-      console.error("Error donating to campaign:", error);
-      toast.error(`Donation failed. ${error.message || 'Please try again.'}`, { position: 'top-center' });
+        numberOfCampaigns++;
+
+        return numberOfCampaigns - 1;
     }
-  };
 
-  const calculateProgress = (collected, target) => {
-    return (collected / target) * 100;
-  };
+    function donateToCampaign(uint256 _id,uint256 amount) public payable {
 
-  const renderCampaigns = (campaigns, isClosed) => (
-    <Row xs={1} md={2} lg={3} className="g-4">
-      {campaigns.map((campaign) => {
-        const tronWeb = window.tronLink.tronWeb;
-        const collected = tronWeb.fromSun(campaign.amountCollected);
-        const target = tronWeb.fromSun(campaign.target);
-        const progress = calculateProgress(collected, target);
-        return (
-          <Col key={campaign.id} className="d-flex align-items-stretch">
-            <div className="card custom-card">
-              <img
-                className="card-img-top"
-                src={campaign.image}
-                alt={campaign.title}
-                style={{
-                  height: '200px',
-                  objectFit: 'cover',
-                  width: '100%'
-                }}
-              />
-              <div className="card-body">
-                <h5 className="card-title">{campaign.title}</h5>
-                <p className="card-text">{campaign.description}</p>
-                <p><strong>Target:</strong> {target} TRX</p>
-                <p><strong>Collected:</strong> {collected} TRX</p>
-                <p><strong>Deadline:</strong> {new Date(campaign.deadline * 1000).toLocaleString()}</p>
 
-                <ProgressBar 
-                  now={isClosed ? 100 : progress} 
-                  label={isClosed ? 'Campaign Closed' : `${Math.round(progress)}%`} 
-                  variant={isClosed ? "danger" : "success"} 
-                />
+        Campaign storage campaign = campaigns[_id];
 
-                {!isClosed && (
-                  <>
-                    <Form.Control
-                      type="number"
-                      placeholder="Enter donation amount"
-                      value={donationAmounts[campaign.id] || ''}
-                      onChange={(e) => handleDonationChange(campaign.id, e.target.value)}
-                      className="mb-3 mt-3"
-                      min="0"
-                      step="0.1"
-                    />
-                    <Button
-                      onClick={() => donateToCampaign(campaign.id)}
-                      variant="primary"
-                      className="w-100"
-                      disabled={!donationAmounts[campaign.id]} 
-                    >
-                      Donate
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-          </Col>
-        );
-      })}
-    </Row>
-  );
+        campaign.donators.push(msg.sender);
+        campaign.donations.push(amount);
 
-  return (
-    <div className="container-fluid mt-5">
-      <div className="row">
-        <main role="main" className="col-lg-12 mx-auto" style={{ maxWidth: '1000px' }}>
-          <div className="content mx-auto">
-            <h2 className="text-center mb-4">Open Campaigns</h2>
-            {error && <Alert variant="danger">{error}</Alert>}
-            {loading ? (
-              <div className="text-center mt-5">
-                <Spinner animation="border" />
-                <p>Loading campaigns...</p>
-              </div>
-            ) : (
-              renderCampaigns(openCampaigns, false)
-            )}
-            <h2 className="text-center mb-4 mt-5">Closed Campaigns</h2>
-            {renderCampaigns(closedCampaigns, true)}
-          </div>
-        </main>
-      </div>
-    </div>
-  );
+        // check if payment was done or not!
+        (bool sent,) = payable(campaign.owner).call{value: amount}("");
+
+        if(sent) {
+            campaign.amountCollected = campaign.amountCollected + amount;
+        }
+    }
+
+    function getDonators(uint256 _id) view public returns (address[] memory, uint256[] memory) {
+        return (campaigns[_id].donators, campaigns[_id].donations);
+    }
+
+    function getCampaigns() public view returns (Campaign[] memory) {
+        Campaign[] memory allCampaigns = new Campaign[](numberOfCampaigns);
+
+        for(uint i = 0; i < numberOfCampaigns; i++) {
+            Campaign storage item = campaigns[i];
+
+            allCampaigns[i] = item;
+        }
+
+        return allCampaigns;
+        
+    }
+    
 }
 
-export default Home;
+/// correct address
+//  TVRNdTDEw4UyiU29HaWTo1Nne6tnjfsrJ2
+
+
+

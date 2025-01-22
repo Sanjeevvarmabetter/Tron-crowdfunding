@@ -108,17 +108,31 @@ function Home({ contractAddress, contractABI }) {
         const collected = tronWeb.fromSun(campaign.amountCollected);
         const target = tronWeb.fromSun(campaign.target);
         const progress = calculateProgress(collected, target);
+  
+        let imageSrc = campaign.image;
+        if (!imageSrc) {
+          imageSrc = 'https://via.placeholder.com/200x200?text=No+Image';
+        } else if (imageSrc.startsWith('data:image')) {
+          // Valid Base64 image
+        } else if (imageSrc.startsWith('/ipfs/')) {
+          imageSrc = `https://ipfs.io/ipfs/${imageSrc.substring(6)}`;
+        } else if (imageSrc.startsWith('http')) {
+          // Valid URL
+        } else {
+          imageSrc = `data:image/jpeg;base64,${imageSrc}`;
+        }
+  
         return (
           <Col key={campaign.id} className="d-flex align-items-stretch">
             <div className="card custom-card">
               <img
                 className="card-img-top"
-                src={campaign.image}
+                src={imageSrc}
                 alt={campaign.title}
                 style={{
                   height: '200px',
                   objectFit: 'cover',
-                  width: '100%'
+                  width: '100%',
                 }}
               />
               <div className="card-body">
@@ -127,13 +141,13 @@ function Home({ contractAddress, contractABI }) {
                 <p><strong>Target:</strong> {target} TRX</p>
                 <p><strong>Collected:</strong> {collected} TRX</p>
                 <p><strong>Deadline:</strong> {new Date(campaign.deadline * 1000).toLocaleString()}</p>
-
-                <ProgressBar 
-                  now={isClosed ? 100 : progress} 
-                  label={isClosed ? 'Campaign Closed' : `${Math.round(progress)}%`} 
-                  variant={isClosed ? "danger" : "success"} 
+  
+                <ProgressBar
+                  now={isClosed ? 100 : progress}
+                  label={isClosed ? 'Campaign Closed' : `${Math.round(progress)}%`}
+                  variant={isClosed ? 'danger' : 'success'}
                 />
-
+  
                 {!isClosed && (
                   <>
                     <Form.Control
@@ -149,7 +163,7 @@ function Home({ contractAddress, contractABI }) {
                       onClick={() => donateToCampaign(campaign.id)}
                       variant="primary"
                       className="w-100"
-                      disabled={!donationAmounts[campaign.id]} 
+                      disabled={!donationAmounts[campaign.id]}
                     >
                       Donate
                     </Button>
@@ -162,7 +176,7 @@ function Home({ contractAddress, contractABI }) {
       })}
     </Row>
   );
-
+  
   return (
     <div className="container-fluid mt-5">
       <div className="row">
