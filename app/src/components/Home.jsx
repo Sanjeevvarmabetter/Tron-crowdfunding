@@ -30,12 +30,6 @@ function Home({ contractAddress, contractABI }) {
         return collected < target && campaign.deadline > currentTime;
       });
 
-      const closed = campaignsWithIds.filter(campaign => {
-        const collected = tronWeb.fromSun(campaign.amountCollected);
-        const target = tronWeb.fromSun(campaign.target);
-        return collected >= target || campaign.deadline <= currentTime;
-      });
-
       setOpenCampaigns(open);
     } catch (error) {
       console.error("Error loading campaigns:", error);
@@ -81,10 +75,7 @@ function Home({ contractAddress, contractABI }) {
         shouldPollResponse: true
       });
 
-      console.log('Transaction:', tx);
       toast.success('Donation successful!', { position: 'top-center' });
-
-      // Update campaigns based on new collected amount
       getCampaigns();
       setDonationAmounts(prev => ({
         ...prev,
@@ -101,6 +92,12 @@ function Home({ contractAddress, contractABI }) {
     return (collected / target) * 100;
   };
 
+  const getPinataUrl = (hash) => {
+    if (!hash) return 'https://via.placeholder.com/200x200?text=No+Image';
+    // Using Pinata gateway
+    return `https://gateway.pinata.cloud/ipfs/${hash}`;
+  };
+
   const renderCampaigns = (campaigns, isClosed) => (
     <Row xs={1} md={2} lg={3} className="g-4">
       {campaigns.map((campaign) => {
@@ -108,31 +105,22 @@ function Home({ contractAddress, contractABI }) {
         const collected = tronWeb.fromSun(campaign.amountCollected);
         const target = tronWeb.fromSun(campaign.target);
         const progress = calculateProgress(collected, target);
-  
-        let imageSrc = campaign.image;
-        if (!imageSrc) {
-          imageSrc = 'https://via.placeholder.com/200x200?text=No+Image';
-        } else if (imageSrc.startsWith('data:image')) {
-          // Valid Base64 image
-        } else if (imageSrc.startsWith('/ipfs/')) {
-          imageSrc = `https://ipfs.io/ipfs/${imageSrc.substring(6)}`;
-        } else if (imageSrc.startsWith('http')) {
-          // Valid URL
-        } else {
-          imageSrc = `data:image/jpeg;base64,${imageSrc}`;
-        }
-  
+
         return (
           <Col key={campaign.id} className="d-flex align-items-stretch">
             <div className="card custom-card">
               <img
                 className="card-img-top"
-                src={imageSrc}
+                src={getPinataUrl(campaign.image)} // Using campaign.image as that's how it's stored in the contract
                 alt={campaign.title}
                 style={{
                   height: '200px',
                   objectFit: 'cover',
                   width: '100%',
+                }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://via.placeholder.com/200x200?text=Error+Loading+Image';
                 }}
               />
               <div className="card-body">
@@ -192,7 +180,7 @@ function Home({ contractAddress, contractABI }) {
             ) : (
               renderCampaigns(openCampaigns, false)
             )}
-    </div>
+          </div>
         </main>
       </div>
     </div>
