@@ -3,8 +3,7 @@ import { Button, Form, Row } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import "../App.css";
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+
 
 const Create = ({ contractAddress, contractABI }) => {
   const [processing, setProcessing] = useState(false);
@@ -14,7 +13,7 @@ const Create = ({ contractAddress, contractABI }) => {
     description: "",
     target: 0,
     deadline: 0,
-    imageHash: "" // Replacing image URL with imageHash
+    imageHash: "" 
   });
 
   const handleDateChange = (date) => {
@@ -26,7 +25,7 @@ const Create = ({ contractAddress, contractABI }) => {
       },
     });
   };
-
+  // conneting to tron blockchain
   const tron = window.tronLink;
   const tronWeb = tron.tronWeb;
 
@@ -50,7 +49,7 @@ const Create = ({ contractAddress, contractABI }) => {
       'Content-Type': 'multipart/form-data',
       pinata_api_key: "20a1ac93e10b67f081c5",
       pinata_secret_api_key: "2b3680b650e07a507c4df5a9649b9b6438d7f8e4c3cc0cfab22a73bb968d02d7",
-    };
+    };  // sample  keys for testing 
 
     try {
       const response = await axios.post(url, formData, { headers });

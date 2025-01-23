@@ -75,11 +75,11 @@ function App() {
                 element={<Create contractAddress={contractData.address} contractABI={contractData.abi} />}
               />
               <Route
-                path='/'
+                path='/' // open campaigns route
                 element={<Home contractAddress={contractData.address} contractABI={contractData.abi} />}
               />
               <Route
-                path='/closed'
+                path='/closed' // closed or completed campaigns route
                 element={<Closed contractAddress={contractData.address} contractABI={contractData.abi} />}
               />
             </Routes>
