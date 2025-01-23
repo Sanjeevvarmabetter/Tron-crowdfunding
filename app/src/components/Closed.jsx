@@ -100,6 +100,12 @@ function Home({ contractAddress, contractABI }) {
   const calculateProgress = (collected, target) => {
     return (collected / target) * 100;
   };
+  
+    const getPinataUrl = (hash) => {
+      return hash
+      ? `https://gateway.pinata.cloud/ipfs/${hash}`
+      : 'https://via.placeholder.com/200x200?text=No+Image';
+  };
 
   const renderCampaigns = (campaigns, isClosed) => (
     <Row xs={1} md={2} lg={3} className="g-4">
@@ -113,7 +119,7 @@ function Home({ contractAddress, contractABI }) {
             <div className="card custom-card">
               <img
                 className="card-img-top"
-                src={campaign.image}
+                src={getPinataUrl(campaign.image)}
                 alt={campaign.title}
                 style={{
                   height: '200px',

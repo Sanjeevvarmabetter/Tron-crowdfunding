@@ -8,7 +8,7 @@ function Home({ contractAddress, contractABI }) {
   const [donationAmounts, setDonationAmounts] = useState({}); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  /// fetching campaigns
   const getCampaigns = async () => {
     setLoading(true);
     setError(null);
@@ -60,7 +60,7 @@ function Home({ contractAddress, contractABI }) {
       [campaignId]: value
     }));
   };
-
+  // donation f
   const donateToCampaign = async (campaignId) => {
     const donationAmount = donationAmounts[campaignId];
     const parsedAmount = parseFloat(donationAmount);
@@ -94,7 +94,7 @@ function Home({ contractAddress, contractABI }) {
         callValue: amountInSun,
         shouldPollResponse: true,
       });
-  
+      // taking more time while donatinng
       console.log('Transaction:', tx);
       toast.success('Donation successful!', { position: 'top-center' });
   
